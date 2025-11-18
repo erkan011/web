@@ -151,19 +151,63 @@
                 <p>İş hedefleriyle uyumlu teknik çözümler; kullanıcı deneyimi ve performansı öne çıkaran gerçek proje örnekleri.</p>
             </div>
             <div class="case-grid">
-                <article>
+                <article data-project="seller-red">
+                    <header>
+                        <span class="case-tag">Yapay Zeka Uygulaması</span>
+                        <h3>The Seller Red</h3>
+                    </header>
+                    <p>Pazaryeri satıcıları için geliştirilmiş yapay zeka destekli analiz ve öneri platformu. Frontend geliştirme ve test süreçlerinde aktif rol aldım.</p>
+                    <ul>
+                        <li>Yapay zeka entegrasyonları</li>
+                        <li>Frontend geliştirme</li>
+                        <li>Test ve kalite güvencesi</li>
+                        <li>120M+ kullanıcı etkileşimi</li>
+                    </ul>
+                    <button class="case-inspect-btn">İncele</button>
+                </article>
+                <article data-project="stocktakin-red">
+                    <header>
+                        <span class="case-tag">Yapay Zeka Uygulaması</span>
+                        <h3>The Stocktakin Red</h3>
+                    </header>
+                    <p>Stok yönetimi ve analiz için yapay zeka destekli çözüm. Frontend geliştirme ve test süreçlerinde yer aldım.</p>
+                    <ul>
+                        <li>Yapay zeka tabanlı stok analizi</li>
+                        <li>Frontend geliştirme</li>
+                        <li>Test ve optimizasyon</li>
+                        <li>Gerçek zamanlı veri işleme</li>
+                    </ul>
+                    <button class="case-inspect-btn">İncele</button>
+                </article>
+                <article data-project="broker-red">
+                    <header>
+                        <span class="case-tag">Yapay Zeka Uygulaması</span>
+                        <h3>The Broker Red</h3>
+                    </header>
+                    <p>Finansal danışmanlık ve yatırım önerileri için yapay zeka destekli platform. Frontend geliştirme ve test süreçlerinde çalıştım.</p>
+                    <ul>
+                        <li>Yapay zeka destekli öneri motoru</li>
+                        <li>Frontend geliştirme</li>
+                        <li>Test ve kalite güvencesi</li>
+                        <li>Firmalara eğitim verilmesi</li>
+                    </ul>
+                    <button class="case-inspect-btn">İncele</button>
+                </article>
+                <article data-project="voice-calculator">
                     <header>
                         <span class="case-tag">Ürün Lansmanı</span>
                         <h3>Sesli Hesap Makinesi</h3>
                     </header>
-                    <p>Android’in Konuşma Tanıma API’si ve TensorFlow Lite kullanarak sesli matematik işlemleri gerçekleştiren uygulama. 120K+ kullanıcı, %4 altında crash rate.</p>
+                    <p>Android'in Konuşma Tanıma API'si ve TensorFlow Lite kullanarak sesli matematik işlemleri gerçekleştiren uygulama. 120K+ kullanıcı, %4 altında crash rate.</p>
                     <ul>
                         <li>MVVM + Compose hibrit ekranlar</li>
                         <li>Gemini API ile doğal dil desteği</li>
                         <li>Edge cihazlarda model optimizasyonu</li>
+                        <li>120K+ aktif kullanıcı</li>
                     </ul>
+                    <button class="case-inspect-btn">İncele</button>
                 </article>
-                <article>
+                <article data-project="finance-coach">
                     <header>
                         <span class="case-tag">MVP Doğrulaması</span>
                         <h3>Kişisel Finans Koçu</h3>
@@ -173,9 +217,11 @@
                         <li>Composable tasarım sistemi</li>
                         <li>Remote config &amp; feature flag</li>
                         <li>Performans ölçümü (Startup trace)</li>
+                        <li>Yapay zeka destekli finans önerileri</li>
                     </ul>
+                    <button class="case-inspect-btn">İncele</button>
                 </article>
-                <article>
+                <article data-project="mentorship-platform">
                     <header>
                         <span class="case-tag">Topluluk Çalışması</span>
                         <h3>Mentorluk Platformu</h3>
@@ -185,32 +231,88 @@
                         <li>CI/CD pipeline kurulumu</li>
                         <li>Takım içi kod inceleme standartları</li>
                         <li>6 kişilik ekip için mentorluk</li>
+                        <li>ML Kit görsel sınıflandırma</li>
                     </ul>
+                    <button class="case-inspect-btn">İncele</button>
                 </article>
             </div>
         </section>
 
+        <!-- Project Modal -->
+        <div id="projectModal" class="project-modal">
+            <div class="project-modal-content">
+                <button class="project-modal-close" aria-label="Kapat">&times;</button>
+                <div id="projectModalContent"></div>
+            </div>
+        </div>
+
         <section id="assistant" class="assistant-section">
             <div class="assistant-header">
                 <h2>Teknik Asistan</h2>
-                <p>Yapay Zeka, Yazılım hakkında sorularınızı yanıtlayan kişisel sohbet botu. Aşağıdan direkt yazabilirsiniz.</p>
+                <p>Yapay Zeka, Yazılım hakkında sorularınızı yanıtlayan kişisel sohbet botu. Robot asistanımızla sohbet edebilirsiniz.</p>
             </div>
             <div class="assistant-body">
-                <div class="assistant-info">
-                    <h3>Öne Çıkan Konular</h3>
-                    <ul>
-                        <li>Yapay Zeka API entegrasyonları</li>
-                        <li>Tailwind CSS ile tasarım sistemleri</li>
-                        <li>React Native ile hibrit dönüşüm</li>
-                        <li>Girişimcilik ve MVP doğrulama süreçleri</li>
-                    </ul>
+                <div class="assistant-robot-container">
+                    <div class="robot-character" id="robotCharacter">
+                        <div class="robot-thought-cloud" id="robotThoughtCloud">
+                            <div class="thought-bubble">
+                                <div class="thought-dots">
+                                    <span></span>
+                                    <span></span>
+                                    <span></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="robot-head">
+                            <div class="robot-face">
+                                <div class="robot-eye left-eye">
+                                    <div class="eye-pupil"></div>
+                                </div>
+                                <div class="robot-eye right-eye">
+                                    <div class="eye-pupil"></div>
+                                </div>
+                                <div class="robot-mouth"></div>
+                            </div>
+                            <div class="robot-antenna">
+                                <div class="antenna-top"></div>
+                            </div>
+                        </div>
+                        <div class="robot-body">
+                            <div class="robot-screen">
+                                <div class="screen-content">
+                                    <span class="screen-text">AI</span>
+                                </div>
+                            </div>
+                            <div class="robot-arms">
+                                <div class="robot-arm left-arm"></div>
+                                <div class="robot-arm right-arm"></div>
+                            </div>
+                        </div>
+                        <div class="robot-base"></div>
+                        <div class="robot-glow"></div>
+                    </div>
+                    <div class="robot-greeting" id="robotGreeting">
+                        <div class="greeting-bubble">
+                            <p>Merhaba! Ben Erkan'ın Teknik Asistanı. Sizinle nasıl ilgilenebilirim? 🚀</p>
+                        </div>
+                    </div>
                 </div>
                 <div class="assistant-chat">
+                    <div class="chat-header">
+                        <div class="chat-status">
+                            <span class="status-dot"></span>
+                            <span>Çevrimiçi</span>
+                        </div>
+                    </div>
                     <div id="chatWindow" class="chat-window" role="log" aria-live="polite"></div>
                     <form id="chatForm" class="chat-form" autocomplete="off">
                         <label class="sr-only" for="userMessage">Mesajınız</label>
-                        <input id="userMessage" name="message" type="text" placeholder="Örneğin: Compose ile state yönetimi nasıl?" required>
-                        <button type="submit" class="btn primary">Sor</button>
+                        <div class="input-wrapper">
+                            <input id="userMessage" name="message" type="text" placeholder="Sorunuzu yazın... Örneğin: React Native ile nasıl çalışıyorsunuz?" required>
+                            <button type="submit" class="btn primary send-btn">
+                                <span class="send-icon">➤</span>
+                            </button>
+                        </div>
                     </form>
                 </div>
             </div>
