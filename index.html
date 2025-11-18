@@ -8,16 +8,24 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
 </head>
 <body>
     <header class="top-bar">
         <div class="logo">Erkan <span>Çalışkan</span></div>
         <nav class="main-nav" aria-label="Ana menü">
-            <a href="#hero">Ana Sayfa</a>
-            <a href="#projects">Projeler</a>
-            <a href="#ai">Yapay Zeka</a>
-            <a href="#about">Hakkımda &amp; CV</a>
-            <a href="#contact">İletişim &amp; Referanslar</a>
+            <a href="#hero" class="nav-link">Ana Sayfa</a>
+            <a href="#case-studies" class="nav-link">Projeler</a>
+            <a href="#assistant" class="nav-link ai-nav-link">
+                <span class="nav-robot-icon">🤖</span>
+                Yapay Zeka
+            </a>
+            <a href="#profile" class="nav-link">Hakkımda &amp; CV</a>
+            <a href="#contact" class="nav-link">İletişim &amp; Referanslar</a>
         </nav>
         <button id="themeToggle" class="theme-toggle" aria-label="Tema değiştir">
             <span class="icon-dark">🌙</span>
@@ -35,9 +43,9 @@
                     Start-up disiplinini teknik derinlikle birleştirerek ekiplerin fikirlerini pazara hazır çözümlere dönüştürüyorum.
                 </p>
                 <div class="hero-actions">
-                    <a class="btn primary" href="#contact">Birlikte Çalışalım</a>
-                    <a class="btn secondary" href="#case-studies">Öne Çıkan Projeler</a>
-                    <a class="btn tertiary" href="Erkan%20%C3%87al%C4%B1%C5%9Fkan%20T%C3%BCrk%C3%A7e%20CV.pdf" target="_blank" rel="noopener">CV'yi İndir</a>
+                    <a class="btn primary nav-link" href="#contact">Birlikte Çalışalım</a>
+                    <a class="btn secondary nav-link" href="#case-studies">Öne Çıkan Projeler</a>
+                    <a class="btn tertiary" href="assets/Erkan%20%C3%87al%C4%B1%C5%9Fkan%20T%C3%BCrk%C3%A7e%20CV.pdf" target="_blank" rel="noopener">CV'yi İndir</a>
                 </div>
                 <div class="hero-metrics">
                     <article>
@@ -62,7 +70,7 @@
                     </div>
                     <h2>Teknik Asistan</h2>
                     <p>Kişisel bilgilerimi ve teknik sorularınızı yanıtlayan kişisel sohbet botu. Aşağıdan direkt yazabilirsiniz.</p>
-                    <a class="btn primary assistant-launch" href="#assistant">Asistanla Sohbet Et</a>
+                    <a class="btn primary assistant-launch nav-link" href="#assistant">Asistanla Sohbet Et</a>
                     <div class="assistant-marquee" aria-hidden="true">
                         <div class="assistant-marquee-track">
                             <span>TheBlueRed</span>
@@ -150,7 +158,8 @@
                 <h2>Öne Çıkan Çalışmalar</h2>
                 <p>İş hedefleriyle uyumlu teknik çözümler; kullanıcı deneyimi ve performansı öne çıkaran gerçek proje örnekleri.</p>
             </div>
-            <div class="case-grid">
+            <div class="case-grid-wrapper">
+                <div class="case-grid" id="caseGrid">
                 <article data-project="seller-red">
                     <header>
                         <span class="case-tag">Yapay Zeka Uygulaması</span>
@@ -235,8 +244,62 @@
                     </ul>
                     <button class="case-inspect-btn">İncele</button>
                 </article>
+                </div>
+                <div class="case-grid-controls">
+                    <button class="case-nav-btn prev-btn" id="prevProjects" aria-label="Önceki projeler">‹</button>
+                    <button class="case-nav-btn next-btn" id="nextProjects" aria-label="Sonraki projeler">›</button>
+                </div>
+                <div class="add-project-section">
+                    <button class="add-project-btn" id="addProjectBtn">
+                        <span>+</span>
+                        Projelerinizi buradan ekleyebilirsiniz
+                    </button>
+                </div>
             </div>
         </section>
+
+        <!-- Add Project Modal -->
+        <div id="addProjectModal" class="project-modal">
+            <div class="project-modal-content">
+                <button class="project-modal-close" aria-label="Kapat">&times;</button>
+                <div class="project-modal-header">
+                    <h2>Yeni Proje Ekle</h2>
+                    <p>Projenizi ekleyerek portföyünüze katkıda bulunun</p>
+                </div>
+                <form id="addProjectForm" class="add-project-form">
+                    <div class="form-group">
+                        <label for="projectName">İsim Soyisim</label>
+                        <input type="text" id="projectName" name="name" placeholder="Örn: Ahmet Yılmaz" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="projectTitle">Proje Başlığı</label>
+                        <input type="text" id="projectTitle" name="title" placeholder="Örn: E-Ticaret Platformu" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="projectTag">Proje Kategorisi</label>
+                        <select id="projectTag" name="tag" required>
+                            <option value="">Kategori Seçin</option>
+                            <option value="Yapay Zeka Uygulaması">Yapay Zeka Uygulaması</option>
+                            <option value="Ürün Lansmanı">Ürün Lansmanı</option>
+                            <option value="MVP Doğrulaması">MVP Doğrulaması</option>
+                            <option value="Topluluk Çalışması">Topluluk Çalışması</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="projectDescription">Proje Açıklaması</label>
+                        <textarea id="projectDescription" name="description" rows="4" placeholder="Projenizin kısa açıklaması..." required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="projectFeatures">Özellikler (Her satıra bir özellik)</label>
+                        <textarea id="projectFeatures" name="features" rows="4" placeholder="Özellik 1&#10;Özellik 2&#10;Özellik 3" required></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn secondary" id="cancelProjectBtn">İptal</button>
+                        <button type="submit" class="btn primary">Projeyi Ekle</button>
+                    </div>
+                </form>
+            </div>
+        </div>
 
         <!-- Project Modal -->
         <div id="projectModal" class="project-modal">
@@ -253,7 +316,7 @@
             </div>
             <div class="assistant-body">
                 <div class="assistant-robot-container">
-                    <div class="robot-character" id="robotCharacter">
+                    <div class="robot-character" id="robotCharacter" tabindex="0" role="button" aria-label="Robot asistan ile etkileşim">
                         <div class="robot-thought-cloud" id="robotThoughtCloud">
                             <div class="thought-bubble">
                                 <div class="thought-dots">
@@ -324,14 +387,43 @@
                 <p>Yeni bir mobil ürün fikriniz mi var? Teknik keşif oturumu planlayalım.</p>
             </div>
             <div class="contact-grid">
-                <div>
-                    <h3>Bana Ulaşın</h3>
-                    <ul class="contact-list">
-                        <li><span>E-posta:</span> <a href="mailto:erkan@theblue.red""">erkan@theblue.red</a></li>
-                        <li><span>LinkedIn:</span> <a href="https://linkedin.com/in/erkancaliskan" target="_blank" rel="noopener">linkedin.com/in/erkancaliskan</a></li>
-                        <li><span>GitHub:</span> <a href="https://github.com/erkan011" target="_blank" rel="noopener">github.com/erkan011</a></li>
-                    </ul>
-                    <p class="contact-note">Çalışma modellleri: ürün danışmanlığı, proje bazlı geliştirme ve teknik mentorluk.</p>
+                <div class="contact-info-card">
+                    <div class="contact-icon">📧</div>
+                    <h3>E-posta</h3>
+                    <p>Doğrudan iletişim için</p>
+                    <a href="mailto:erkan@theblue.red" class="contact-link">erkan@theblue.red</a>
+                </div>
+                <div class="contact-info-card">
+                    <div class="contact-icon">💼</div>
+                    <h3>LinkedIn</h3>
+                    <p>Profesyonel ağ</p>
+                    <a href="https://linkedin.com/in/erkancaliskan" target="_blank" rel="noopener" class="contact-link">linkedin.com/in/erkancaliskan</a>
+                </div>
+                <div class="contact-info-card">
+                    <div class="contact-icon">💻</div>
+                    <h3>GitHub</h3>
+                    <p>Kod ve projeler</p>
+                    <a href="https://github.com/erkan011" target="_blank" rel="noopener" class="contact-link">github.com/erkan011</a>
+                </div>
+            </div>
+            <div class="contact-services">
+                <h3>Hizmetlerim</h3>
+                <div class="services-grid">
+                    <div class="service-card">
+                        <span class="service-icon">🎯</span>
+                        <h4>Ürün Danışmanlığı</h4>
+                        <p>Ürün stratejisi ve roadmap planlama</p>
+                    </div>
+                    <div class="service-card">
+                        <span class="service-icon">🚀</span>
+                        <h4>Proje Bazlı Geliştirme</h4>
+                        <p>Özel projeler için teknik çözümler</p>
+                    </div>
+                    <div class="service-card">
+                        <span class="service-icon">👨‍🏫</span>
+                        <h4>Teknik Mentorluk</h4>
+                        <p>Ekip ve bireysel teknik eğitimler</p>
+                    </div>
                 </div>
             </div>
         </section>

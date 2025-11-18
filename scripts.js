@@ -121,12 +121,6 @@ const defaultAnswer = message =>
             : 'Yapay zekâ, React Native, MVVM veya girişimcilik konularında merak ettiklerini sorabilirsin.'
     }`;
 
-const sanitize = text => {
-    const div = document.createElement('div');
-    div.innerText = text;
-    return div.innerHTML;
-};
-
 const stripMarkup = text =>
     text
         .replace(/\[cite[^\]]*\]/gi, '')
@@ -502,45 +496,20 @@ function closeProjectModal() {
     document.body.style.overflow = '';
 }
 
-// Event listeners for project cards
-document.addEventListener('DOMContentLoaded', () => {
-    const projectCards = document.querySelectorAll('[data-project]');
-    const inspectButtons = document.querySelectorAll('.case-inspect-btn');
+// Close modal handlers
+if (projectModalClose) {
+    projectModalClose.addEventListener('click', closeProjectModal);
+}
 
-    projectCards.forEach(card => {
-        card.addEventListener('click', (e) => {
-            if (e.target.classList.contains('case-inspect-btn')) {
-                e.stopPropagation();
-                const projectId = card.getAttribute('data-project');
-                openProjectModal(projectId);
-            }
-        });
-    });
-
-    inspectButtons.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const card = btn.closest('[data-project]');
-            if (card) {
-                const projectId = card.getAttribute('data-project');
-                openProjectModal(projectId);
-            }
-        });
-    });
-
-    projectModalClose?.addEventListener('click', closeProjectModal);
-    projectModal?.addEventListener('click', (e) => {
-        if (e.target === projectModal) {
-            closeProjectModal();
+// Close modal on Escape key
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        const activeModal = document.querySelector('.project-modal.active');
+        if (activeModal) {
+            activeModal.classList.remove('active');
+            document.body.style.overflow = '';
         }
-    });
-
-    // Close modal on Escape key
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && projectModal?.classList.contains('active')) {
-            closeProjectModal();
-        }
-    });
+    }
 });
 
 // Intersection Observer for scroll animations
@@ -566,9 +535,271 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+// Project navigation
+let currentProjectIndex = 0;
+const projectsPerView = 3;
+
+function updateProjectNavigation() {
+    const caseGrid = document.getElementById('caseGrid');
+    if (!caseGrid) return;
+    
+    const projects = Array.from(caseGrid.querySelectorAll('article'));
+    const totalProjects = projects.length;
+    const maxIndex = Math.max(0, totalProjects - projectsPerView);
+    
+    const prevBtn = document.getElementById('prevProjects');
+    const nextBtn = document.getElementById('nextProjects');
+    
+    if (prevBtn) prevBtn.disabled = currentProjectIndex === 0;
+    if (nextBtn) nextBtn.disabled = currentProjectIndex >= maxIndex;
+    
+    // Scroll to current position
+    if (projects[currentProjectIndex]) {
+        const scrollAmount = currentProjectIndex * (projects[0].offsetWidth + 32); // 32 = gap
+        caseGrid.scrollTo({ left: scrollAmount, behavior: 'smooth' });
+    }
+}
+
+// Add project functionality
+function addNewProject(formData) {
+    const caseGrid = document.getElementById('caseGrid');
+    if (!caseGrid) return;
+    
+    const features = formData.get('features').split('\n').filter(f => f.trim());
+    const projectId = `custom-${Date.now()}`;
+    
+    const projectArticle = document.createElement('article');
+    projectArticle.setAttribute('data-project', projectId);
+    projectArticle.innerHTML = `
+        <header>
+            <span class="case-tag">${formData.get('tag')}</span>
+            <h3>${formData.get('title')}</h3>
+        </header>
+        <p>${formData.get('description')}</p>
+        <ul>
+            ${features.map(f => `<li>${f.trim()}</li>`).join('')}
+        </ul>
+        <div style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--color-text-muted);">
+            <strong>Ekleyen:</strong> ${formData.get('name')}
+        </div>
+        <button class="case-inspect-btn">İncele</button>
+    `;
+    
+    caseGrid.appendChild(projectArticle);
+    
+    // Add to projectData
+    projectData[projectId] = {
+        title: formData.get('title'),
+        tag: formData.get('tag'),
+        description: formData.get('description'),
+        overview: formData.get('description'),
+        technologies: [],
+        features: features,
+        stats: [
+            { label: 'Ekleyen', value: formData.get('name') },
+            { label: 'Durum', value: 'Yeni Eklendi' }
+        ],
+        role: `${formData.get('name')} tarafından eklenen proje.`
+    };
+    
+    // Re-attach event listeners
+    attachProjectListeners();
+    updateProjectNavigation();
+}
+
+// Robot click interaction
+function handleRobotClick() {
+    const robotCharacter = document.getElementById('robotCharacter');
+    if (!robotCharacter) return;
+    
+    animateRobot('excited');
+    
+    // Show a fun message
+    const messages = [
+        'Merhaba! Size nasıl yardımcı olabilirim?',
+        'Ben buradayım! Sorularınızı bekliyorum.',
+        'Hazırım! Ne öğrenmek istersiniz?',
+        'Merhaba! Teknik konularda yardımcı olabilirim.'
+    ];
+    
+    const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+    
+    // Scroll to chat if not visible
+    const chatForm = document.getElementById('chatForm');
+    if (chatForm) {
+        chatForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        const userMessage = document.getElementById('userMessage');
+        if (userMessage) {
+            userMessage.focus();
+            setTimeout(() => {
+                userMessage.value = '';
+                userMessage.placeholder = randomMessage;
+            }, 100);
+        }
+    }
+    
+    setTimeout(() => {
+        animateRobot('idle');
+    }, 2000);
+}
+
+// Attach project listeners
+function attachProjectListeners() {
+    const projectCards = document.querySelectorAll('[data-project]');
+    const inspectButtons = document.querySelectorAll('.case-inspect-btn');
+
+    projectCards.forEach(card => {
+        card.addEventListener('click', (e) => {
+            if (e.target.classList.contains('case-inspect-btn')) {
+                e.stopPropagation();
+                const projectId = card.getAttribute('data-project');
+                openProjectModal(projectId);
+            }
+        });
+    });
+
+    inspectButtons.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const card = btn.closest('[data-project]');
+            if (card) {
+                const projectId = card.getAttribute('data-project');
+                openProjectModal(projectId);
+            }
+        });
+    });
+}
+
+// Smooth scroll for navigation links
+function initSmoothScroll() {
+    const navLinks = document.querySelectorAll('.nav-link');
+    const header = document.querySelector('.top-bar');
+    if (!header) return;
+    
+    const headerHeight = header.offsetHeight;
+    
+    navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            const href = link.getAttribute('href');
+            
+            // Only handle hash links
+            if (href && href.startsWith('#')) {
+                e.preventDefault();
+                const targetId = href.substring(1);
+                const targetElement = document.getElementById(targetId);
+                
+                if (targetElement) {
+                    const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - headerHeight - 20;
+                    
+                    window.scrollTo({
+                        top: Math.max(0, targetPosition),
+                        behavior: 'smooth'
+                    });
+                    
+                    // Update URL without triggering scroll
+                    if (history.pushState) {
+                        history.pushState(null, null, href);
+                    }
+                }
+            }
+        });
+    });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     initTheme();
     initYear();
+    initSmoothScroll();
     greetMessage();
+    
+    // Project navigation
+    const prevBtn = document.getElementById('prevProjects');
+    const nextBtn = document.getElementById('nextProjects');
+    
+    if (prevBtn) {
+        prevBtn.addEventListener('click', () => {
+            if (currentProjectIndex > 0) {
+                currentProjectIndex--;
+                updateProjectNavigation();
+            }
+        });
+    }
+    
+    if (nextBtn) {
+        nextBtn.addEventListener('click', () => {
+            const caseGrid = document.getElementById('caseGrid');
+            if (caseGrid) {
+                const projects = Array.from(caseGrid.querySelectorAll('article'));
+                const maxIndex = Math.max(0, projects.length - projectsPerView);
+                if (currentProjectIndex < maxIndex) {
+                    currentProjectIndex++;
+                    updateProjectNavigation();
+                }
+            }
+        });
+    }
+    
+    // Add project modal
+    const addProjectBtn = document.getElementById('addProjectBtn');
+    const addProjectModal = document.getElementById('addProjectModal');
+    const addProjectForm = document.getElementById('addProjectForm');
+    const cancelProjectBtn = document.getElementById('cancelProjectBtn');
+    
+    if (addProjectBtn) {
+        addProjectBtn.addEventListener('click', () => {
+            if (addProjectModal) {
+                addProjectModal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+        });
+    }
+    
+    if (cancelProjectBtn) {
+        cancelProjectBtn.addEventListener('click', () => {
+            if (addProjectModal) {
+                addProjectModal.classList.remove('active');
+                document.body.style.overflow = '';
+                if (addProjectForm) addProjectForm.reset();
+            }
+        });
+    }
+    
+    if (addProjectForm) {
+        addProjectForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const formData = new FormData(addProjectForm);
+            addNewProject(formData);
+            addProjectModal.classList.remove('active');
+            document.body.style.overflow = '';
+            addProjectForm.reset();
+        });
+    }
+    
+    // Robot click interaction
+    const robotCharacter = document.getElementById('robotCharacter');
+    if (robotCharacter) {
+        robotCharacter.addEventListener('click', handleRobotClick);
+        robotCharacter.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                handleRobotClick();
+            }
+        });
+    }
+    
+    // Attach project listeners
+    attachProjectListeners();
+    updateProjectNavigation();
+    
+    // Close modals on outside click
+    const modals = document.querySelectorAll('.project-modal');
+    modals.forEach(modal => {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        });
+    });
 });
 
